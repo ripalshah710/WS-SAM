@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: WS-POC
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 100
+Resources:
+  SimpleTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: WS-POC-Topic
+  SimpleQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: WS-POC-QUEUE
+      VisibilityTimeout: 100
+  SNSPayloadLogger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: WS-POC-SNS-Trigger
+      Description: A Lambda function that logs the payload of messages sent to an
+        associated SNS topic.
+      CodeUri: SNSPayloadLogger
+      Handler: WS-POC::WS_POC.Function::FunctionHandler
+      Runtime: dotnetcore3.1
+      MemorySize: 256
+      Environment:
+        Variables:
+          DB_CONNECTION: Data Source=172.17.34.228;Initial Catalog=tx_esc_04;user
+            id=devteam;password=H0ll1ster~;
+          SQS_URL:
+            Ref: SimpleQueue
+      Events:
+        SNSTopicEvent:
+          Type: SNS
+          Properties:
+            Topic:
+              Ref: SimpleTopic
+      Role: arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0bbd7d38acdd3dc18
+        SubnetIds:
+        - subnet-001e3983a9fe5576a
+        - subnet-002500af93aa39ce5
+    Metadata:
+      SamResourceId: SNSPayloadLogger
+  SQSTrigger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: WS-POC-SQS-Trigger
+      Description: A Lambda function that logs the payload of messages sent to an
+        associated SNS topic.
+      CodeUri: SQSTrigger
+      Handler: WS-POC::WS_POC.SQSListener::SQSListenerHandler
+      Runtime: dotnetcore3.1
+      MemorySize: 256
+      Environment:
+        Variables:
+          DB_CONNECTION: Data Source=172.17.34.228;Initial Catalog=tx_esc_04;user
+            id=devteam;password=H0ll1ster~;
+          S3_Bucket_Name: esc-04-mail-template
+          S3_File_Name: tx_esc_04NotificationServices.xml
+      Events:
+        SQSQueueEvent:
+          Type: SQS
+          Properties:
+            Queue:
+              Fn::GetAtt:
+              - SimpleQueue
+              - Arn
+      Role: arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0bbd7d38acdd3dc18
+        SubnetIds:
+        - subnet-001e3983a9fe5576a
+        - subnet-002500af93aa39ce5
+    Metadata:
+      SamResourceId: SQSTrigger
+Outputs:
+  AppBucketArn:
+    Description: SNS Topic ARN
+    Value:
+      Ref: SimpleTopic

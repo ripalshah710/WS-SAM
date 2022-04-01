@@ -1,0 +1,92 @@
+{
+    "configurations": [
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "WS-POC:SNSPayloadLogger",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "${workspaceFolder}/WS-POC/template.yaml",
+                "logicalId": "SNSPayloadLogger"
+            },
+            "lambda": {
+                "payload": {
+                    "json": {
+                        "Records": [
+                            {
+                                "EventSource": "aws:sns",
+                                "EventVersion": "1.0",
+                                "EventSubscriptionArn": "arn:aws:sns:us-east-1:{{{accountId}}}:SimpleTopic",
+                                "Sns": {
+                                    "Type": "Notification",
+                                    "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
+                                    "TopicArn": "arn:aws:sns:us-east-1:123456789012:SimpleTopic",
+                                    "Subject": "example subject",
+                                    "Message": "NotifyFaci",
+                                    "Timestamp": "1970-01-01T00:00:00.000Z",
+                                    "SignatureVersion": "1",
+                                    "Signature": "EXAMPLE",
+                                    "SigningCertUrl": "EXAMPLE",
+                                    "UnsubscribeUrl": "EXAMPLE",
+                                    "MessageAttributes": {
+                                        "Test": {
+                                            "Type": "String",
+                                            "Value": "TestString"
+                                        },
+                                        "TestBinary": {
+                                            "Type": "Binary",
+                                            "Value": "TestBinary"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                "environmentVariables": {
+                    "DB_CONNECTION": "Data Source=172.17.34.228;Initial Catalog=tx_esc_04;user id=devteam;password=H0ll1ster~",
+                    "SQS_URL": "https://sqs.us-east-1.amazonaws.com/471808368523/testqueue"
+                }
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "WS-POC:SQSTrigger",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "${workspaceFolder}/WS-POC/template.yaml",
+                "logicalId": "SQSTrigger"
+            },
+            "lambda": {
+                "payload": {
+                    "json": {
+                        "Records": [
+                            {
+                                "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+                                "receiptHandle": "MessageReceiptHandle",
+                                "body": "{ 'attendee_pk': 2259073, 'title': '1504951-STAAR Alternate 2 for Principals', 'schedule': '2020: Feb 19 12:30 PM - 03:30 PM', 'emails': '', 'location': 'Pasadena ISD Carmen Orozco Professional Development Center', 'name': 'Karyn Johnson', 'email': 'hardik@panchal.esc4.net', 'Address1': '', 'Address2': ', ', 'home_phone': '', 'work_phone': '', 'Room': 'Pasadena ISD,Bailey El' }",
+                                "attributes": {
+                                    "ApproximateReceiveCount": "1",
+                                    "SentTimestamp": "1523232000000",
+                                    "SenderId": "123456789012",
+                                    "ApproximateFirstReceiveTimestamp": "1523232000001"
+                                },
+                                "messageAttributes": {},
+                                "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
+                                "eventSource": "aws:sqs",
+                                "eventSourceARN": "arn:{partition}:sqs:{region}:123456789012:MyQueue",
+                                "awsRegion": "{region}"
+                            }
+                        ]
+                    }
+                },
+                "environmentVariables": {
+                    "DB_CONNECTION": "Data Source=172.17.34.228;Initial Catalog=tx_esc_04;user id=devteam;password=H0ll1ster~",
+                    "S3_Bucket_Name": "esc-04-mail-template",
+                    "S3_File_Name": "tx_esc_04NotificationServices.xml"
+                }
+            }
+        }
+    ]
+}

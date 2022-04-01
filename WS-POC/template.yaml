@@ -1,0 +1,148 @@
+# This is the SAM template that represents the architecture of your serverless application
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
+
+# The AWSTemplateFormatVersion identifies the capabilities of the template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
+AWSTemplateFormatVersion: 2010-09-09
+Description: WS-POC
+
+# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 100
+
+# Resources declares the AWS resources that you want to include in the stack
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+Resources:
+  # This is an SNS Topic with all default configuration properties. To learn more about the available options, see
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html
+  SimpleTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: WS-POC-Topic
+
+  SimpleQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: WS-POC-QUEUE
+      VisibilityTimeout: 100
+  
+  # This is the Lambda function definition associated with the source code: sns-payload-logger.js. For all available properties, see
+  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  SNSPayloadLogger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: WS-POC-SNS-Trigger
+      Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
+      CodeUri: ./src/WS-POC/
+      Handler: WS-POC::WS_POC.Function::FunctionHandler
+      Runtime: dotnetcore3.1
+      MemorySize: 256
+      Environment:
+        Variables:
+          DB_CONNECTION: Data Source=172.17.34.228;Initial Catalog=tx_esc_04;user id=devteam;password=H0ll1ster~;
+          SQS_URL: !Ref SimpleQueue #https://sqs.us-east-1.amazonaws.com/471808368523/testqueue
+      # This property associates this Lambda function with the SNS topic defined above, so that whenever the topic
+      # receives a message, the Lambda function is invoked
+      Events:
+        SNSTopicEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref SimpleTopic
+      # Policies:
+      #   # Give Lambda basic execution Permission to the helloFromLambda
+      #   - AWSLambdaBasicExecutionRole
+      Role: arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p 
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0bbd7d38acdd3dc18
+        SubnetIds:
+          - subnet-001e3983a9fe5576a
+          - subnet-002500af93aa39ce5
+  # SQSPermission:
+  # Type: AWS::Lambda::Permission
+  # Properties:
+  #   FunctionName: WS-POC-3-SNSPayloadLogger-piyWpIj7wybs
+  #   Action: lambda:InvokeFunction
+  #   Principal: sqs.amazonaws.com
+  #   SourceArn: !GetAtt SimpleQueue.Arn
+  
+  # AllowLambds2SQSPolicy:
+  #   Type: AWS::SQS::QueuePolicy
+  #   Properties:
+  #     Queues: [!Ref SimpleQueue]
+  #     PolicyDocument:
+  #       Version: 2012-10-17
+  #       Id: PublicationPolicy1
+  #       Statement:
+  #       - Sid: Allow-Lambda-SendMessage
+  #         Effect: Allow
+  #         Principal: 
+  #           AWS: 
+  #            - arn:aws:iam::471808368523:root
+  #            - arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p
+  #         Action: sqs:*
+  #         Resource: !GetAtt SimpleQueue.Arn
+          # Condition:
+          #   ArnEquals:
+          #     aws:SourceArn: !GetAtt SNSPayloadLogger.Arn
+              
+  # LambdaSQSSendAccess:
+  #   Type: "AWS::IAM::Policy"
+  #   Properties:
+  #     PolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: "Allow"
+  #           Action:
+  #             - "sqs:SendMessage"
+  #             - "sqs:ReceiveMessage"
+  #             - "sqs:DeleteMessage"
+  #             - "sqs:GetQueueAttributes"
+  #           Resource:
+  #             - !Ref SNSPayloadLogger
+  #     PolicyName: LambdaSQSSendAccess1
+  #     Roles:
+  #       - test2-lambda-role-dlnort4p
+
+  SQSTrigger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: WS-POC-SQS-Trigger
+      Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
+      CodeUri: ./src/WS-POC/
+      Handler: WS-POC::WS_POC.SQSListener::SQSListenerHandler
+      Runtime: dotnetcore3.1
+      MemorySize: 256
+      Environment:
+        Variables:
+          DB_CONNECTION: Data Source=172.17.34.228;Initial Catalog=tx_esc_04;user id=devteam;password=H0ll1ster~;
+          S3_Bucket_Name: esc-04-mail-template
+          S3_File_Name: tx_esc_04NotificationServices.xml
+      # This property associates this Lambda function with the SNS topic defined above, so that whenever the topic
+      # receives a message, the Lambda function is invoked
+      Events:
+        SQSQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SimpleQueue.Arn
+      # Policies:
+      #   # Give Lambda basic execution Permission to the helloFromLambda
+      #   - AWSLambdaBasicExecutionRole
+      Role: arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p   
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0bbd7d38acdd3dc18
+        SubnetIds:
+          - subnet-001e3983a9fe5576a
+          - subnet-002500af93aa39ce5
+
+    
+
+Outputs:  
+  AppBucketArn:
+    Description: "SNS Topic ARN"
+    Value: !Ref  SimpleTopic
