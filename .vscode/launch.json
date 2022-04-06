@@ -87,6 +87,35 @@
                     "S3_File_Name": "tx_esc_04NotificationServices.xml"
                 }
             }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "WS-POC:ScheduledEventLogger",
+            "invokeTarget": {
+                "target": "template",
+                "templatePath": "${workspaceFolder}/WS-POC/template.yaml",
+                "logicalId": "ScheduledEventLogger"
+            },
+            "lambda": {
+                "payload": {
+                    "json": {
+                        "id": "cdc73f9d-aea9-11e3-9d5a-835b769c0d9c",
+                        "detail-type": "Scheduled Event",
+                        "source": "aws.events",
+                        "account": "123456789012",
+                        "time": "1970-01-01T00:00:00Z",
+                        "region": "us-east-1",
+                        "resources": [
+                          "arn:aws:events:us-east-1:123456789012:rule/ExampleRule"
+                        ],
+                        "detail": {}
+                      }
+                },
+                "environmentVariables": {
+                    "SNS_Topic": "arn:aws:sns:us-east-1:471808368523:WS-POC-Topic"
+                }
+            }
         }
     ]
 }

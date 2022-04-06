@@ -8,7 +8,8 @@ Description: WS-POC
 
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
-Transform: AWS::Serverless-2016-10-31
+Transform: 
+  - AWS::Serverless-2016-10-31
 
 Globals:
   Function:
@@ -38,7 +39,7 @@ Resources:
       FunctionName: WS-POC-SNS-Trigger
       Description: A Lambda function that logs the payload of messages sent to an associated SNS topic.
       CodeUri: ./src/WS-POC/
-      Handler: WS-POC::WS_POC.Function::FunctionHandler
+      Handler: WS-POC::WS_POC.SNSTrigger::SNSTriggerHandler
       Runtime: dotnetcore3.1
       MemorySize: 256
       Environment:
@@ -62,52 +63,6 @@ Resources:
         SubnetIds:
           - subnet-001e3983a9fe5576a
           - subnet-002500af93aa39ce5
-  # SQSPermission:
-  # Type: AWS::Lambda::Permission
-  # Properties:
-  #   FunctionName: WS-POC-3-SNSPayloadLogger-piyWpIj7wybs
-  #   Action: lambda:InvokeFunction
-  #   Principal: sqs.amazonaws.com
-  #   SourceArn: !GetAtt SimpleQueue.Arn
-  
-  # AllowLambds2SQSPolicy:
-  #   Type: AWS::SQS::QueuePolicy
-  #   Properties:
-  #     Queues: [!Ref SimpleQueue]
-  #     PolicyDocument:
-  #       Version: 2012-10-17
-  #       Id: PublicationPolicy1
-  #       Statement:
-  #       - Sid: Allow-Lambda-SendMessage
-  #         Effect: Allow
-  #         Principal: 
-  #           AWS: 
-  #            - arn:aws:iam::471808368523:root
-  #            - arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p
-  #         Action: sqs:*
-  #         Resource: !GetAtt SimpleQueue.Arn
-          # Condition:
-          #   ArnEquals:
-          #     aws:SourceArn: !GetAtt SNSPayloadLogger.Arn
-              
-  # LambdaSQSSendAccess:
-  #   Type: "AWS::IAM::Policy"
-  #   Properties:
-  #     PolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: "Allow"
-  #           Action:
-  #             - "sqs:SendMessage"
-  #             - "sqs:ReceiveMessage"
-  #             - "sqs:DeleteMessage"
-  #             - "sqs:GetQueueAttributes"
-  #           Resource:
-  #             - !Ref SNSPayloadLogger
-  #     PolicyName: LambdaSQSSendAccess1
-  #     Roles:
-  #       - test2-lambda-role-dlnort4p
-
   SQSTrigger:
     Type: AWS::Serverless::Function
     Properties:
@@ -139,7 +94,34 @@ Resources:
         SubnetIds:
           - subnet-001e3983a9fe5576a
           - subnet-002500af93aa39ce5
-
+  ScheduledEventLogger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: WS-POC-ClouldWatch-Trigger
+      Description: A Lambda function that logs the payload of messages from a scheduled CloudWatch Event
+      CodeUri: ./src/WS-POC/
+      Handler: WS-POC::WS_POC.EventListner::EventListnerHandler
+      Runtime: dotnetcore3.1
+      MemorySize: 256
+      Environment:
+        Variables:
+          SNS_Topic: !Ref SimpleTopic 
+      # This property associates this Lambda function with a scheduled CloudWatch Event. For all available properties, see
+      # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#schedule
+      # This example runs every hour.
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Name: WS-POC-ClouldWatch-Event-Rule
+            Schedule: rate(2 hours)
+      Role: arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p 
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-0bbd7d38acdd3dc18
+        SubnetIds:
+          - subnet-001e3983a9fe5576a
+          - subnet-002500af93aa39ce5
     
 
 Outputs:  
