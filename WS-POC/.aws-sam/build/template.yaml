@@ -1,6 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: WS-POC
-Transform: AWS::Serverless-2016-10-31
+Transform:
+- AWS::Serverless-2016-10-31
 Globals:
   Function:
     Timeout: 100
@@ -21,7 +22,7 @@ Resources:
       Description: A Lambda function that logs the payload of messages sent to an
         associated SNS topic.
       CodeUri: SNSPayloadLogger
-      Handler: WS-POC::WS_POC.Function::FunctionHandler
+      Handler: WS-POC::WS_POC.SNSTrigger::SNSTriggerHandler
       Runtime: dotnetcore3.1
       MemorySize: 256
       Environment:
@@ -78,6 +79,35 @@ Resources:
         - subnet-002500af93aa39ce5
     Metadata:
       SamResourceId: SQSTrigger
+  ScheduledEventLogger:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: WS-POC-ClouldWatch-Trigger
+      Description: A Lambda function that logs the payload of messages from a scheduled
+        CloudWatch Event
+      CodeUri: ScheduledEventLogger
+      Handler: WS-POC::WS_POC.EventListner::EventListnerHandler
+      Runtime: dotnetcore3.1
+      MemorySize: 256
+      Environment:
+        Variables:
+          SNS_Topic:
+            Ref: SimpleTopic
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Name: WS-POC-ClouldWatch-Event-Rule
+            Schedule: rate(2 hours)
+      Role: arn:aws:iam::471808368523:role/service-role/test2-lambda-role-dlnort4p
+      VpcConfig:
+        SecurityGroupIds:
+        - sg-0bbd7d38acdd3dc18
+        SubnetIds:
+        - subnet-001e3983a9fe5576a
+        - subnet-002500af93aa39ce5
+    Metadata:
+      SamResourceId: ScheduledEventLogger
 Outputs:
   AppBucketArn:
     Description: SNS Topic ARN

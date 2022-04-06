@@ -8,6 +8,6 @@ architecture = "x86_64"
 handler = "WS-POC::WS_POC.Function::FunctionHandler"
 manifest_hash = ""
 packagetype = "Zip"
-functions = ["SNSPayloadLogger", "SQSTrigger"]
+functions = ["SNSPayloadLogger", "SQSTrigger", "ScheduledEventLogger"]
 
 [layer_build_definitions]

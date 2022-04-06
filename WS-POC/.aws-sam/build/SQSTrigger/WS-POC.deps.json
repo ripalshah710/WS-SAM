@@ -12,6 +12,8 @@
           "AWSSDK.S3": "3.7.8.13",
           "AWSSDK.SQS": "3.7.2.38",
           "AWSSDK.SimpleEmail": "3.7.0.141",
+          "AWSSDK.SimpleNotificationService": "3.7.3",
+          "Amazon.Lambda.CloudWatchEvents": "4.0.0",
           "Amazon.Lambda.Core": "2.0.0",
           "Amazon.Lambda.SNSEvents": "2.0.0",
           "Amazon.Lambda.SQSEvents": "2.1.0",
@@ -21,6 +23,14 @@
         },
         "runtime": {
           "WS-POC.dll": {}
+        }
+      },
+      "Amazon.Lambda.CloudWatchEvents/4.0.0": {
+        "runtime": {
+          "lib/netcoreapp3.1/Amazon.Lambda.CloudWatchEvents.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
         }
       },
       "Amazon.Lambda.Core/2.0.0": {
@@ -85,6 +95,17 @@
           "lib/netcoreapp3.1/AWSSDK.SimpleEmail.dll": {
             "assemblyVersion": "3.3.0.0",
             "fileVersion": "3.7.0.141"
+          }
+        }
+      },
+      "AWSSDK.SimpleNotificationService/3.7.3": {
+        "dependencies": {
+          "AWSSDK.Core": "3.7.10.1"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/AWSSDK.SimpleNotificationService.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.3.0"
           }
         }
       },
@@ -189,6 +210,13 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Amazon.Lambda.CloudWatchEvents/4.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3W7aq+8bipuVcvzvj/LxRWl2ZgLWreJhfzdSCLk5KX4tcNW7cbW+RoL2+RO+Ai3RXKyujR7Lu8DQaViqn6pTiw==",
+      "path": "amazon.lambda.cloudwatchevents/4.0.0",
+      "hashPath": "amazon.lambda.cloudwatchevents.4.0.0.nupkg.sha512"
+    },
     "Amazon.Lambda.Core/2.0.0": {
       "type": "package",
       "serviceable": true,
@@ -237,6 +265,13 @@
       "sha512": "sha512-/xW0Fteo2F0a9TDOU0D6G/ci4eEC5nQVwq7k/1h88RVFWIATM4/hDXM/yWjSLlNzf85Daz3Hhsekiu6ZAnxRfA==",
       "path": "awssdk.simpleemail/3.7.0.141",
       "hashPath": "awssdk.simpleemail.3.7.0.141.nupkg.sha512"
+    },
+    "AWSSDK.SimpleNotificationService/3.7.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1P/wr+Imm13rwPRiQWsQS2CWvXswpcN9rooMnWEq2qUvBJzQTXruot1idGiNXHxEr6ISgH/NzKHzTsogItH4DQ==",
+      "path": "awssdk.simplenotificationservice/3.7.3",
+      "hashPath": "awssdk.simplenotificationservice.3.7.3.nupkg.sha512"
     },
     "AWSSDK.SQS/3.7.2.38": {
       "type": "package",
