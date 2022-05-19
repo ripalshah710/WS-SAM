@@ -1,0 +1,26 @@
+version: 0.0
+Resources:
+  - WS-POC-ClouldWatch-Trigger:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "WS-POC-ClouldWatch-Trigger"
+        Alias: "WS-POC-ClouldWatch-TriggerAlias"
+        CurrentVersion: "1"
+        TargetVersion: "2"
+  - WS-POC-SQS-Trigger:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "WS-POC-SQS-Trigger"
+        Alias: "WS-POC-SQS-TriggerAlias"
+        CurrentVersion: "1"
+        TargetVersion: "2"
+  - WS-POC-SNS-Trigger:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: "WS-POC-SNS-Trigger"
+        Alias: "WS-POC-SNS-TriggerAlias"
+        CurrentVersion: "1"
+        TargetVersion: "2"
+Hooks:
+  - BeforeAllowTraffic: "LambdaFunctionToValidateBeforeTrafficShift"
+  - AfterAllowTraffic: "LambdaFunctionToValidateAfterTrafficShift"

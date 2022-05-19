@@ -17,9 +17,9 @@ phases:
       - cd ..
       - sam package --template-file template.yaml --resolve-s3 --output-template-file serverless.yaml
       - sam deploy --template-file serverless.yaml --stack-name WS-POC-3 --capabilities CAPABILITY_IAM --no-confirm-changeset
-#artifacts:
+artifacts:
  # type: zip
-  #files:
+  files:
 #    - '**/*'
-   #  - appspec.yml
+     - appspec.yml
     # - '**/*'
