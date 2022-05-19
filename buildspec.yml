@@ -13,6 +13,9 @@ phases:
     commands:
       - echo Build started on `date`
       - dotnet publish -c release -o ./build_output WS-POC.csproj
+      - cd ..
+      - cd ..
+      - sam package --debug --template-file template.yaml --resolve-s3 --output-template-file serverless.yaml
 #artifacts:
  # type: zip
   #files:
