@@ -16,7 +16,7 @@ phases:
       - cd ..
       - cd ..
       - sam package --debug --template-file template.yaml --resolve-s3 --output-template-file serverless.yaml
-      - sam deploy --template-file serverless.yaml --stack-name WS-POC3 --capabilities CAPABILITY_IAM
+      - sam deploy -y --template-file serverless.yaml --stack-name WS-POC3 --capabilities CAPABILITY_IAM
 #artifacts:
  # type: zip
   #files:
