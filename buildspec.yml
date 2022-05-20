@@ -14,7 +14,8 @@ phases:
     commands:
       - echo Build started on `date`
 #      - dotnet publish -c release -o ./build_output WS-POC.csproj
-      - dotnet publish
+#      - dotnet publish
+      - dotnet publish /p:GenerateRuntimeConfigurationFiles=true
       - cd ..
       - cd ..
       - sam package --template-file template.yaml --resolve-s3 --output-template-file serverless.yaml
