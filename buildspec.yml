@@ -18,12 +18,12 @@ phases:
       - dotnet publish /p:GenerateRuntimeConfigurationFiles=true
       - cd ..
       - cd ..
-      - sam package --template-file template.yaml --resolve-s3 --output-template-file serverless.yaml
-      - sam deploy --template-file serverless.yaml --stack-name WS-POC-3 --capabilities CAPABILITY_IAM --no-confirm-changeset
+      - sam package --template-file template.yaml --resolve-s3 --output-template-file template.yaml
+      - sam deploy --template-file template.yaml --stack-name WS-POC-3 --capabilities CAPABILITY_IAM --no-confirm-changeset
 artifacts:
  # type: zip
   files:
 #    - '**/*'
      - appspec.yml
-     - serverless.yaml
+     - template.yaml
     # - '**/*'
