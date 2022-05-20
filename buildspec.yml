@@ -24,4 +24,5 @@ artifacts:
   files:
 #    - '**/*'
      - appspec.yml
+     - serverless.yaml
     # - '**/*'
