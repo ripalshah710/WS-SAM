@@ -1,0 +1,25 @@
+version: 0.2
+phases:    
+  install:
+    runtime-versions:
+      dotnet: 3.1
+        
+  pre_build:
+    commands:
+      - echo Restore started on `date`
+      - cd WS-POC/src/WS-POC
+      - dotnet restore WS-POC.csproj
+  build:
+    commands:
+      - echo Build started on `date`
+      - dotnet publish -c release -o ./build_output WS-POC.csproj
+      - cd ..
+      - cd ..
+      - sam package --debug --template-file template.yaml --resolve-s3 --output-template-file serverless.yaml
+      - sam deploy --template-file serverless.yaml --stack-name WS-POC3 --capabilities CAPABILITY_IAM --no-confirm-changeset
+#artifacts:
+ # type: zip
+  #files:
+#    - '**/*'
+   #  - appspec.yml
+    # - '**/*'

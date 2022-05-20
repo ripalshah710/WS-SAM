@@ -8,11 +8,13 @@ phases:
     commands:
       - echo Restore started on `date`
       - cd WS-POC/src/WS-POC
-      - dotnet restore WS-POC.csproj
+ #     - dotnet restore WS-POC.csproj
+      - dotnet restore
   build:
     commands:
       - echo Build started on `date`
-      - dotnet publish -c release -o ./build_output WS-POC.csproj
+#      - dotnet publish -c release -o ./build_output WS-POC.csproj
+      - dotnet publish
       - cd ..
       - cd ..
       - sam package --template-file template.yaml --resolve-s3 --output-template-file serverless.yaml
